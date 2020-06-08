@@ -1,11 +1,11 @@
-﻿<Window x:Class="ORTPR_ModBusTable.Views.Main.MainWindow"
+﻿<Window x:Name="MainForm" x:Class="ORTPR_ModBusTable.Views.Main.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ORTPR_ModBusTable.Views.Main"
         mc:Ignorable="d"
-        Title="ModBusTable" Height="450" Width="800">
+        Title="ModBusTable" Height="450" Width="800" Closing="MainForm_Closing">
     <Grid>
         <DockPanel>
             <ToolBarTray DockPanel.Dock="Top">

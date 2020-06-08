@@ -24,17 +24,17 @@
             <ColumnDefinition Width="0.2*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <GroupBox Header="Разделитель данных в csv-файле:" Padding="5" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="4">
-            <TextBox Text=";" TextAlignment="Left"/>
+            <TextBox Name="tbCsvDelimeter" Text=";" TextAlignment="Left"/>
         </GroupBox>
         <GroupBox Header="Путь к файлу описания структуры устройств:" Padding="5" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="4">
             <DockPanel>
-                <TextBlock Text="{Binding DefaultTypeInfosFilePath}" HorizontalAlignment="Stretch"/>
+                <TextBlock Name="tbDefaultTypeInfosFilePath" HorizontalAlignment="Stretch"/>
                 <Button Content="..." Click="OpenTypeInfosFile_Click" Width="30" HorizontalAlignment="Right"/>
             </DockPanel>
         </GroupBox>
         <GroupBox Header="Путь к файлу описания размерности типа:" Padding="5" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="4">
             <DockPanel>
-                <TextBlock Text="123" HorizontalAlignment="Stretch"/>
+                <TextBlock Name="tbDefaultTypeOffsetFilePath" HorizontalAlignment="Stretch"/>
                 <Button Content="..." Click="OpenTypeOffsetFile_Click" Width="30" HorizontalAlignment="Right"/>
             </DockPanel>
         </GroupBox>

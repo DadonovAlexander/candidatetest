@@ -50,7 +50,6 @@ namespace ORTPR_ModBusTable.Views.Main
                 string fileName = dialog.FileName;
                 Properties.Settings.Default.DefaultCsvFilePath = fileName;
                 Devices = new ObservableCollection<Device>(Device.LoadFromCsvFile(fileName));
-                //Devices.CollectionChanged += Devices_CollectionChanged;
                 OnPropertyChanged("Devices");
             }
         }
@@ -78,61 +77,70 @@ namespace ORTPR_ModBusTable.Views.Main
 
         void GenModBusTable()
         {
-            OnPropertyChanged("Devices");
-            string pathJsonFile = "C:\\Users\\ARM\\Desktop\\candidatetest-master\\TypeInfos.json";
-            List<DeviceType> typeInfos = DeviceTypeInfos.LoadFromJsonFile(pathJsonFile);
-            Dictionary<string, int> typeOffset = new Dictionary<string, int>();
-            using (StreamReader file = File.OpenText("TypeOffset.json"))
+            try
             {
-                JsonSerializer serializer = new JsonSerializer();
-                typeOffset = (Dictionary<string, int>)serializer.Deserialize(file, typeof(Dictionary<string, int>));
-            }
-
-            List<Binding> bindings = new List<Binding>();
-            DeviceType typeInfo;
-            int addr = 0;
-            // конкатенация
-            foreach (Device device in Devices)
-            {
-                if (device.IsIgnore)
+                //OnPropertyChanged("Devices");
+                List<DeviceType> typeInfos = DeviceTypeInfos.LoadFromJsonFile(Properties.Settings.Default.DefaultTypeInfosFilePath);
+                Dictionary<string, int> typeOffset = new Dictionary<string, int>();
+                using (StreamReader file = File.OpenText(Properties.Settings.Default.DefaultTypeOffsetFilePath))
                 {
-                    typeInfo = typeInfos.Single(t => t.TypeName.Equals(device.Type));
-                    foreach (KeyValuePair<string, string> prop in typeInfo.Propertys)
+                    JsonSerializer serializer = new JsonSerializer();
+                    typeOffset = (Dictionary<string, int>)serializer.Deserialize(file, typeof(Dictionary<string, int>));
+                }
+
+                List<Binding> bindings = new List<Binding>();
+                DeviceType typeInfo;
+                int addr = 0;
+                // конкатенация
+                foreach (Device device in Devices)
+                {
+                    if (device.IsIgnore)
                     {
-                        bindings.Add(new Binding(device.Tag + "." + prop.Key, prop.Value, addr));
-                        if (typeOffset.ContainsKey(prop.Value))
+                        typeInfo = typeInfos.Single(t => t.TypeName.Equals(device.Type));
+                        foreach (KeyValuePair<string, string> prop in typeInfo.Propertys)
                         {
-                            addr += typeOffset[prop.Value];
-                        }
-                        else
-                        {
-                            MessageBox.Show($"В файле определения смещения адресса от типа данных отсутствует заданный тип данных: {prop.Value}");
+                            bindings.Add(new Binding(device.Tag + "." + prop.Key, prop.Value, addr));
+                            if (typeOffset.ContainsKey(prop.Value))
+                            {
+                                addr += typeOffset[prop.Value];
+                            }
+                            else
+                            {
+                                MessageBox.Show($"В файле определения смещения адресса от типа данных отсутствует заданный тип данных: {prop.Value}");
+                            }
                         }
                     }
                 }
+
+                var xmlFile = new XmlDocument();
+                var root = xmlFile.CreateElement("root");
+                foreach (Binding binding in bindings)
+                {
+                    var bindingItem = xmlFile.CreateElement("item");
+                    var attribute = xmlFile.CreateAttribute("Binding");     // Создаем атрибут и нужным именем.
+                    attribute.InnerText = "Introduced";                     // Устанавливаем содержимое атрибута.
+                    bindingItem.Attributes.Append(attribute);               // Добавляем атрибут к элементу.
+                    var child_tag = xmlFile.CreateElement("node-path");
+                    child_tag.InnerText = binding.Tag;
+                    bindingItem.AppendChild(child_tag);
+                    var child_addr = xmlFile.CreateElement("address");
+                    child_addr.InnerText = binding.Address.ToString();
+                    bindingItem.AppendChild(child_addr);
+
+                    root.AppendChild(bindingItem);
+                }
+
+                xmlFile.AppendChild(root);
+                xmlFile.Save("ModbusTable.xml");
+
             }
-
-
-            var xmlFile = new XmlDocument();
-            var root = xmlFile.CreateElement("root");
-            foreach (Binding binding in bindings)
+            catch(Exception ex)
             {
-                var bindingItem = xmlFile.CreateElement("item");
-                var attribute = xmlFile.CreateAttribute("Binding");     // Создаем атрибут и нужным именем.
-                attribute.InnerText = "Introduced";                     // Устанавливаем содержимое атрибута.
-                bindingItem.Attributes.Append(attribute);               // Добавляем атрибут к элементу.
-                var child_tag = xmlFile.CreateElement("node-path");
-                child_tag.InnerText = binding.Tag;
-                bindingItem.AppendChild(child_tag);
-                var child_addr = xmlFile.CreateElement("address");
-                child_addr.InnerText = binding.Address.ToString();
-                bindingItem.AppendChild(child_addr);
-
-                root.AppendChild(bindingItem);
+                MessageBox.Show(ex.Message);
             }
 
-            xmlFile.AppendChild(root);
-            xmlFile.Save("ModbusTable.xml");
+
+            
         }
 
         bool CanGenModBusTable()

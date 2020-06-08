@@ -20,9 +20,6 @@ namespace ORTPR_ModBusTable.Views.Settings
     /// </summary>
     public partial class SettingsWindow : Window
     {
-        public string CsvDelimeter { get; private set; }
-        public string DefaultTypeInfosFilePath { get; private set; }
-        public string DefaultTypeOffsetFilePath { get; private set; }
         public SettingsWindow()
         {
             InitializeComponent();
@@ -30,9 +27,9 @@ namespace ORTPR_ModBusTable.Views.Settings
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            CsvDelimeter = Properties.Settings.Default.DefaultCsvDelimeter;
-            DefaultTypeInfosFilePath = Properties.Settings.Default.DefaultTypeInfosFilePath;
-            DefaultTypeOffsetFilePath = Properties.Settings.Default.DefaultTypeOffsetFilePath;
+            tbCsvDelimeter.Text = Properties.Settings.Default.DefaultCsvDelimeter;
+            tbDefaultTypeInfosFilePath.Text = Properties.Settings.Default.DefaultTypeInfosFilePath;
+            tbDefaultTypeOffsetFilePath.Text = Properties.Settings.Default.DefaultTypeOffsetFilePath;
         }
 
         
@@ -48,7 +45,7 @@ namespace ORTPR_ModBusTable.Views.Settings
             }
             if (dialog.ShowDialog() == true)
             {
-                DefaultTypeInfosFilePath = dialog.FileName;
+                tbDefaultTypeInfosFilePath.Text = dialog.FileName;
             }
         }
 
@@ -63,15 +60,16 @@ namespace ORTPR_ModBusTable.Views.Settings
             }
             if (dialog.ShowDialog() == true)
             {
-                DefaultTypeOffsetFilePath = dialog.FileName;
+                tbDefaultTypeOffsetFilePath.Text = dialog.FileName;
             }
         }
 
         private void Accept_Click(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.DefaultCsvDelimeter = CsvDelimeter;
-            Properties.Settings.Default.DefaultTypeInfosFilePath = DefaultTypeInfosFilePath;
-            Properties.Settings.Default.DefaultTypeOffsetFilePath = DefaultTypeOffsetFilePath;
+            Properties.Settings.Default.DefaultCsvDelimeter = tbCsvDelimeter.Text;
+            Properties.Settings.Default.DefaultTypeInfosFilePath = tbDefaultTypeInfosFilePath.Text;
+            Properties.Settings.Default.DefaultTypeOffsetFilePath = tbDefaultTypeOffsetFilePath.Text;
+            this.DialogResult = true;
         }
     }
 }
