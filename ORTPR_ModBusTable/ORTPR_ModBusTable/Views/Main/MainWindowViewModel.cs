@@ -10,8 +10,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
 
@@ -19,6 +17,7 @@ namespace ORTPR_ModBusTable.Views.Main
 {
     class MainWindowViewModel : INotifyPropertyChanged
     {
+        
         public DelegateCommand OpenDeviceFileCmd { get; protected set; }
         public DelegateCommand SaveDeviceFileCmd { get; protected set; }
         public DelegateCommand GenModBusTableCmd { get; protected set; }
@@ -79,7 +78,6 @@ namespace ORTPR_ModBusTable.Views.Main
         {
             try
             {
-                //OnPropertyChanged("Devices");
                 List<DeviceType> typeInfos = DeviceTypeInfos.LoadFromJsonFile(Properties.Settings.Default.DefaultTypeInfosFilePath);
                 Dictionary<string, int> typeOffset = new Dictionary<string, int>();
                 using (StreamReader file = File.OpenText(Properties.Settings.Default.DefaultTypeOffsetFilePath))
@@ -94,7 +92,7 @@ namespace ORTPR_ModBusTable.Views.Main
                 // конкатенация
                 foreach (Device device in Devices)
                 {
-                    if (device.IsIgnore)
+                    if (!device.IsIgnore)
                     {
                         typeInfo = typeInfos.Single(t => t.TypeName.Equals(device.Type));
                         foreach (KeyValuePair<string, string> prop in typeInfo.Propertys)
@@ -131,7 +129,19 @@ namespace ORTPR_ModBusTable.Views.Main
                 }
 
                 xmlFile.AppendChild(root);
-                xmlFile.Save("ModbusTable.xml");
+
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "XML documents (*.xml)|*.xml|All files (*.*)|*.*";
+                if (!string.IsNullOrEmpty(Properties.Settings.Default.DefaultTypeOffsetFilePath))
+                {
+                    saveFileDialog.InitialDirectory = Properties.Settings.Default.DefaultOutFilePath;
+                }
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    Properties.Settings.Default.DefaultOutFilePath = saveFileDialog.FileName;
+                    xmlFile.Save(Properties.Settings.Default.DefaultOutFilePath);
+                }
+                
 
             }
             catch(Exception ex)

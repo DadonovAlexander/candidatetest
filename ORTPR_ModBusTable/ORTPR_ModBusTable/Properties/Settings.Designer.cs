@@ -70,5 +70,17 @@ namespace ORTPR_ModBusTable.Properties {
                 this["DefaultCsvDelimeter"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DefaultOutFilePath {
+            get {
+                return ((string)(this["DefaultOutFilePath"]));
+            }
+            set {
+                this["DefaultOutFilePath"] = value;
+            }
+        }
     }
 }

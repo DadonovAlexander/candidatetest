@@ -1,17 +1,5 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ORTPR_ModBusTable.Views.Settings
 {
@@ -25,15 +13,23 @@ namespace ORTPR_ModBusTable.Views.Settings
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Инициализируем параметры окна с настройками
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             tbCsvDelimeter.Text = Properties.Settings.Default.DefaultCsvDelimeter;
             tbDefaultTypeInfosFilePath.Text = Properties.Settings.Default.DefaultTypeInfosFilePath;
             tbDefaultTypeOffsetFilePath.Text = Properties.Settings.Default.DefaultTypeOffsetFilePath;
         }
-
         
-
+        /// <summary>
+        /// Путь до файла с определением структуры устройств
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OpenTypeInfosFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
@@ -49,6 +45,11 @@ namespace ORTPR_ModBusTable.Views.Settings
             }
         }
 
+        /// <summary>
+        /// Путь до файла с определением смещения для различных типов данных
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OpenTypeOffsetFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
@@ -64,6 +65,11 @@ namespace ORTPR_ModBusTable.Views.Settings
             }
         }
 
+        /// <summary>
+        /// Принимаем внесенные исправления
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Accept_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.DefaultCsvDelimeter = tbCsvDelimeter.Text;

@@ -11,7 +11,9 @@
             <ToolBarTray DockPanel.Dock="Top">
                 <ToolBar>
                     <Button Content="{StaticResource open_file}" Command="{Binding OpenDeviceFileCmd}" ToolTip="Загрузить список устройств"/>
+                    <!--
                     <Button Content="{StaticResource save_file}" Command="{Binding SaveDeviceFileCmd}" ToolTip="Сохранить список устройств"/>
+                    -->
                     <Button Content="{StaticResource generate}" Command="{Binding GenModBusTableCmd}" ToolTip="Генерировать таблицу привязок"/>
                     <Button Content="{StaticResource settings}" Command="{Binding OpenSettingsWindowCmd}" ToolTip="Открыть окно настроек"/>
                     <Separator/>
