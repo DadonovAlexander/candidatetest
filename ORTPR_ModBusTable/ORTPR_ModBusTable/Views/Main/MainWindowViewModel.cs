@@ -17,7 +17,6 @@ namespace ORTPR_ModBusTable.Views.Main
 {
     class MainWindowViewModel : INotifyPropertyChanged
     {
-        
         public DelegateCommand OpenDeviceFileCmd { get; protected set; }
         public DelegateCommand SaveDeviceFileCmd { get; protected set; }
         public DelegateCommand GenModBusTableCmd { get; protected set; }
@@ -35,6 +34,9 @@ namespace ORTPR_ModBusTable.Views.Main
             SelectedDevice = new Device();
         }
 
+        /// <summary>
+        /// Открываем файл с перечнем устройств
+        /// </summary>
         void OpenDeviceFile()
         {
             OpenFileDialog dialog = new OpenFileDialog();
@@ -58,6 +60,9 @@ namespace ORTPR_ModBusTable.Views.Main
             return true;
         }
 
+        /// <summary>
+        /// TODO: на будующее, возможность сохранения файла с перечнем устройств
+        /// </summary>
         void SaveDeviceFile()
         {
             string dev = "";
@@ -74,6 +79,9 @@ namespace ORTPR_ModBusTable.Views.Main
             return true;
         }
 
+        /// <summary>
+        /// Генерирование таблицы привязок
+        /// </summary>
         void GenModBusTable()
         {
             try
@@ -158,7 +166,9 @@ namespace ORTPR_ModBusTable.Views.Main
             return true;
         }
 
-
+        /// <summary>
+        /// Открытие окна с настройками
+        /// </summary>
         void OpenSettingsWindow()
         {
             var settings = new SettingsWindow();
