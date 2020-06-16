@@ -100,22 +100,14 @@ namespace ORTPR_ModBusTable.Views.Main
                 // конкатенация
                 foreach (Device device in Devices)
                 {
-                    if (!device.IsIgnore)
+                    if (device.IsIgnore)
+                        continue;
+                    typeInfo = typeInfos.Single(t => t.TypeName.Equals(device.Type));
+                    foreach (KeyValuePair<string, string> prop in typeInfo.Propertys)
                     {
-                        typeInfo = typeInfos.Single(t => t.TypeName.Equals(device.Type));
-                        foreach (KeyValuePair<string, string> prop in typeInfo.Propertys)
-                        {
-                            bindings.Add(new Binding(device.Tag + "." + prop.Key, prop.Value, addr));
-                            if (typeOffset.ContainsKey(prop.Value))
-                            {
-                                addr += typeOffset[prop.Value];
-                            }
-                            else
-                            {
-                                MessageBox.Show($"В файле определения смещения адресса от типа данных отсутствует заданный тип данных: {prop.Value}");
-                            }
-                        }
+                        addr = AddNewBinding(typeOffset, bindings, addr, device, prop);
                     }
+
                 }
 
                 var xmlFile = new XmlDocument();
@@ -159,6 +151,30 @@ namespace ORTPR_ModBusTable.Views.Main
 
 
             
+        }
+
+        /// <summary>
+        /// Добавление новой записи в таблицу привязок
+        /// </summary>
+        /// <param name="typeOffset">Таблица смещения адреса новой записи в зависимости от типа тега</param>
+        /// <param name="bindings">Таблица привязок ModBusTable</param>
+        /// <param name="addr">ModBus адресс</param>
+        /// <param name="device">Устройство</param>
+        /// <param name="prop">Параметр устройства</param>
+        /// <returns></returns>
+        private static int AddNewBinding(Dictionary<string, int> typeOffset, List<Binding> bindings, int addr, Device device, KeyValuePair<string, string> prop)
+        {
+            bindings.Add(new Binding(device.Tag + "." + prop.Key, prop.Value, addr));
+            if (typeOffset.ContainsKey(prop.Value))
+            {
+                addr += typeOffset[prop.Value];
+            }
+            else
+            {
+                MessageBox.Show($"В файле определения смещения адресса от типа данных отсутствует заданный тип данных: {prop.Value}");
+            }
+
+            return addr;
         }
 
         bool CanGenModBusTable()
