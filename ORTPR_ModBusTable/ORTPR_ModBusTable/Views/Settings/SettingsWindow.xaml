@@ -28,13 +28,13 @@
         </GroupBox>
         <GroupBox Header="Путь к файлу описания структуры устройств:" Padding="5" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="4">
             <DockPanel>
-                <TextBlock Name="tbDefaultTypeInfosFilePath" HorizontalAlignment="Stretch"/>
+                <TextBlock Name="tbDefaultTypeInfosFilePath" HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
                 <Button Content="..." Click="OpenTypeInfosFile_Click" Width="30" HorizontalAlignment="Right"/>
             </DockPanel>
         </GroupBox>
         <GroupBox Header="Путь к файлу описания размерности типа:" Padding="5" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="4">
             <DockPanel>
-                <TextBlock Name="tbDefaultTypeOffsetFilePath" HorizontalAlignment="Stretch"/>
+                <TextBlock Name="tbDefaultTypeOffsetFilePath" HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
                 <Button Content="..." Click="OpenTypeOffsetFile_Click" Width="30" HorizontalAlignment="Right"/>
             </DockPanel>
         </GroupBox>

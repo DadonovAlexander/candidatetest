@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ORTPR_ModBusTable.Views.Main"
-        mc:Ignorable="d"
-        Title="ModBusTable" Height="450" Width="800" Closing="MainForm_Closing">
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        Title="ModBusTable" Height="450" Width="800">
     <Grid>
         <DockPanel>
             <ToolBarTray DockPanel.Dock="Top">
@@ -49,4 +49,9 @@
     <Window.InputBindings>
         <KeyBinding Command="{Binding OpenDialogWindow}" Gesture="Ctrl+O"/>
     </Window.InputBindings>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding CloseWindowCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
 </Window>

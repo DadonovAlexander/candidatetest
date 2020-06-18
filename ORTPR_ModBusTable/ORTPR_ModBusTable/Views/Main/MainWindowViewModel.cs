@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
 using ORTPR_ModBusTable.Models;
+using ORTPR_ModBusTable.Service;
 using ORTPR_ModBusTable.Views.Settings;
 using Prism.Commands;
 using System;
@@ -21,17 +22,32 @@ namespace ORTPR_ModBusTable.Views.Main
         public DelegateCommand SaveDeviceFileCmd { get; protected set; }
         public DelegateCommand GenModBusTableCmd { get; protected set; }
         public DelegateCommand OpenSettingsWindowCmd { get; protected set; }
-
+        public DelegateCommand CloseWindowCommand { get; protected set; }
+        
         public ObservableCollection<Device> Devices { get; private set; }
         public Device SelectedDevice { get; set; }
+        AppSettings Settings;
         public MainWindowViewModel()
         {
             OpenDeviceFileCmd = new DelegateCommand(OpenDeviceFile, CanOpenDeviceFile);
             SaveDeviceFileCmd = new DelegateCommand(SaveDeviceFile, CanSaveDeviceFile);
             GenModBusTableCmd = new DelegateCommand(GenModBusTable, CanGenModBusTable);
             OpenSettingsWindowCmd = new DelegateCommand(OpenSettingsWindow, CanOpenSettingsWindow);
+            CloseWindowCommand = new DelegateCommand(CloseWindow, CanCloseWindow);
 
             SelectedDevice = new Device();
+
+            //считывание текущих настроек из файла
+            JsonFileProvider<AppSettings> settingsService = new JsonFileProvider<AppSettings>();
+            if(File.Exists(Properties.Settings.Default.AppSettingsFileName))
+            {
+                Settings = settingsService.Load(Properties.Settings.Default.AppSettingsFileName);
+            }
+            else
+            {
+                Settings = new AppSettings();
+            }
+
         }
 
         /// <summary>
@@ -42,15 +58,14 @@ namespace ORTPR_ModBusTable.Views.Main
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "CSV documents (*.csv)|*.csv|All files (*.*)|*.*";
             dialog.FilterIndex = 1;
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.DefaultCsvFilePath))
+            if (!string.IsNullOrEmpty(Settings.DefaultCsvFilePath))
             {
-                dialog.InitialDirectory = Properties.Settings.Default.DefaultCsvFilePath;
+                dialog.InitialDirectory = Settings.DefaultCsvFilePath;
             }
             if (dialog.ShowDialog() == true)
             {
-                string fileName = dialog.FileName;
-                Properties.Settings.Default.DefaultCsvFilePath = fileName;
-                Devices = new ObservableCollection<Device>(Device.LoadFromCsvFile(fileName));
+                Settings.DefaultCsvFilePath = dialog.FileName;
+                Devices = new ObservableCollection<Device>(Device.LoadFromCsvFile(Settings.DefaultCsvFilePath));
                 OnPropertyChanged("Devices");
             }
         }
@@ -86,9 +101,9 @@ namespace ORTPR_ModBusTable.Views.Main
         {
             try
             {
-                List<DeviceType> typeInfos = DeviceTypeInfos.LoadFromJsonFile(Properties.Settings.Default.DefaultTypeInfosFilePath);
+                List<DeviceType> typeInfos = DeviceTypeInfos.LoadFromJsonFile(Settings.DefaultTypeInfosFilePath);
                 Dictionary<string, int> typeOffset = new Dictionary<string, int>();
-                using (StreamReader file = File.OpenText(Properties.Settings.Default.DefaultTypeOffsetFilePath))
+                using (StreamReader file = File.OpenText(Settings.DefaultTypeOffsetFilePath))
                 {
                     JsonSerializer serializer = new JsonSerializer();
                     typeOffset = (Dictionary<string, int>)serializer.Deserialize(file, typeof(Dictionary<string, int>));
@@ -132,14 +147,14 @@ namespace ORTPR_ModBusTable.Views.Main
 
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Filter = "XML documents (*.xml)|*.xml|All files (*.*)|*.*";
-                if (!string.IsNullOrEmpty(Properties.Settings.Default.DefaultTypeOffsetFilePath))
+                if (!string.IsNullOrEmpty(Settings.DefaultTypeOffsetFilePath))
                 {
-                    saveFileDialog.InitialDirectory = Properties.Settings.Default.DefaultOutFilePath;
+                    saveFileDialog.InitialDirectory = Settings.DefaultOutFilePath;
                 }
                 if (saveFileDialog.ShowDialog() == true)
                 {
-                    Properties.Settings.Default.DefaultOutFilePath = saveFileDialog.FileName;
-                    xmlFile.Save(Properties.Settings.Default.DefaultOutFilePath);
+                    Settings.DefaultOutFilePath = saveFileDialog.FileName;
+                    xmlFile.Save(Settings.DefaultOutFilePath);
                 }
                 
 
@@ -187,14 +202,31 @@ namespace ORTPR_ModBusTable.Views.Main
         /// </summary>
         void OpenSettingsWindow()
         {
-            var settings = new SettingsWindow();
-            settings.ShowDialog();
+            var settingsWin = new SettingsWindow();
+            settingsWin.Settings = this.Settings;
+            settingsWin.ShowDialog();
         }
 
         bool CanOpenSettingsWindow()
         {
             return true;
         }
+
+        /// <summary>
+        /// Закрытие окна
+        /// </summary>
+        void CloseWindow()
+        {
+            //запись текущих настроек в файл
+            JsonFileProvider<AppSettings> settingsService = new JsonFileProvider<AppSettings>();
+            settingsService.Save(Settings, Properties.Settings.Default.AppSettingsFileName);
+        }
+
+        bool CanCloseWindow()
+        {
+            return true;
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string prop = "")

@@ -2,20 +2,8 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="ORTPR_ModBusTable.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="DefaultCsvFilePath" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="DefaultTypeInfosFilePath" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="DefaultTypeOffsetFilePath" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="DefaultCsvDelimeter" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="DefaultOutFilePath" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+    <Setting Name="AppSettingsFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">settings.json</Value>
     </Setting>
   </Settings>
 </SettingsFile>

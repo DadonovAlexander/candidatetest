@@ -25,61 +25,13 @@ namespace ORTPR_ModBusTable.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string DefaultCsvFilePath {
+        [global::System.Configuration.DefaultSettingValueAttribute("settings.json")]
+        public string AppSettingsFileName {
             get {
-                return ((string)(this["DefaultCsvFilePath"]));
+                return ((string)(this["AppSettingsFileName"]));
             }
             set {
-                this["DefaultCsvFilePath"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string DefaultTypeInfosFilePath {
-            get {
-                return ((string)(this["DefaultTypeInfosFilePath"]));
-            }
-            set {
-                this["DefaultTypeInfosFilePath"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string DefaultTypeOffsetFilePath {
-            get {
-                return ((string)(this["DefaultTypeOffsetFilePath"]));
-            }
-            set {
-                this["DefaultTypeOffsetFilePath"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string DefaultCsvDelimeter {
-            get {
-                return ((string)(this["DefaultCsvDelimeter"]));
-            }
-            set {
-                this["DefaultCsvDelimeter"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string DefaultOutFilePath {
-            get {
-                return ((string)(this["DefaultOutFilePath"]));
-            }
-            set {
-                this["DefaultOutFilePath"] = value;
+                this["AppSettingsFileName"] = value;
             }
         }
     }
