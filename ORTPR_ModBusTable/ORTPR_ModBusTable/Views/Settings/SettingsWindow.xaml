@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ORTPR_ModBusTable.Views.Settings"
         mc:Ignorable="d"
-        Title="Настроечки" WindowStartupLocation="CenterOwner" Height="300" Width="600" Loaded="Window_Loaded">
+        Name="SettingsWin"
+        Title="Настроечки" WindowStartupLocation="CenterOwner" Height="300" Width="600">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -24,21 +25,21 @@
             <ColumnDefinition Width="0.2*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <GroupBox Header="Разделитель данных в csv-файле:" Padding="5" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="4">
-            <TextBox Name="tbCsvDelimeter" Text=";" TextAlignment="Left"/>
+            <TextBox Name="tbCsvDelimeter" Text="{Binding CsvDelimeter, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Left"/>
         </GroupBox>
         <GroupBox Header="Путь к файлу описания структуры устройств:" Padding="5" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="4">
             <DockPanel>
-                <TextBlock Name="tbDefaultTypeInfosFilePath" HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
-                <Button Content="..." Click="OpenTypeInfosFile_Click" Width="30" HorizontalAlignment="Right"/>
+                <TextBlock Name="tbDefaultTypeInfosFilePath" Text="{Binding TypeInfosFilePath, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                <Button Content="..." Command="{Binding OpenTypeInfosFileCmd}" ToolTip="Настроить путь" Width="30" HorizontalAlignment="Right"/>
             </DockPanel>
         </GroupBox>
         <GroupBox Header="Путь к файлу описания размерности типа:" Padding="5" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="4">
             <DockPanel>
-                <TextBlock Name="tbDefaultTypeOffsetFilePath" HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
-                <Button Content="..." Click="OpenTypeOffsetFile_Click" Width="30" HorizontalAlignment="Right"/>
+                <TextBlock Name="tbDefaultTypeOffsetFilePath" Text="{Binding TypeOffsetFilePath, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                <Button Content="..." Command="{Binding OpenTypeOffsetFileCmd}" ToolTip="Настроить путь" Width="30" HorizontalAlignment="Right"/>
             </DockPanel>
         </GroupBox>
-        <Button IsDefault="True" Content="Применить" Click="Accept_Click" Grid.Column="2" Grid.Row="5" Margin="15" HorizontalAlignment="Left"/>
+        <Button IsDefault="True" Content="Применить" Command="{Binding AcceptCmd}" CommandParameter="{Binding ElementName=SettingsWin}" ToolTip="Настроить путь" Grid.Column="2" Grid.Row="5" Margin="15" HorizontalAlignment="Left"/>
         <Button  IsCancel="True" Content="Отменить" Grid.Column="3" Grid.Row="5" Margin="15" HorizontalAlignment="Right"/>
     </Grid>
 </Window>

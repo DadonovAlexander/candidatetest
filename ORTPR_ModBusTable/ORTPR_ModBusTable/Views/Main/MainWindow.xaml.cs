@@ -25,10 +25,5 @@ namespace ORTPR_ModBusTable.Views.Main
             InitializeComponent();
             DataContext = new MainWindowViewModel();
         }
-
-        private void MainForm_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            Properties.Settings.Default.Save();
-        }
     }
 }

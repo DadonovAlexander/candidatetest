@@ -7,7 +7,11 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         Title="ModBusTable" Height="450" Width="800">
     <Grid>
-        <DockPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="113*"/>
+            <ColumnDefinition Width="85*"/>
+        </Grid.ColumnDefinitions>
+        <DockPanel Grid.ColumnSpan="2">
             <ToolBarTray DockPanel.Dock="Top">
                 <ToolBar>
                     <Button Content="{StaticResource open_file}" Command="{Binding OpenDeviceFileCmd}" ToolTip="Загрузить список устройств"/>

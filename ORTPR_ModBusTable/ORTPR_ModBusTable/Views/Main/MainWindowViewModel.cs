@@ -26,7 +26,6 @@ namespace ORTPR_ModBusTable.Views.Main
         
         public ObservableCollection<Device> Devices { get; private set; }
         public Device SelectedDevice { get; set; }
-        AppSettings Settings;
         public MainWindowViewModel()
         {
             OpenDeviceFileCmd = new DelegateCommand(OpenDeviceFile, CanOpenDeviceFile);
@@ -38,16 +37,11 @@ namespace ORTPR_ModBusTable.Views.Main
             SelectedDevice = new Device();
 
             //считывание текущих настроек из файла
-            JsonFileProvider<AppSettings> settingsService = new JsonFileProvider<AppSettings>();
-            if(File.Exists(Properties.Settings.Default.AppSettingsFileName))
+            if (File.Exists(Properties.Settings.Default.AppSettingsFileName))
             {
-                Settings = settingsService.Load(Properties.Settings.Default.AppSettingsFileName);
+                JsonFileProvider<AppSettings> settingsService = new JsonFileProvider<AppSettings>();
+                AppSettings.SetSettings(settingsService.Load(Properties.Settings.Default.AppSettingsFileName)); 
             }
-            else
-            {
-                Settings = new AppSettings();
-            }
-
         }
 
         /// <summary>
@@ -58,14 +52,16 @@ namespace ORTPR_ModBusTable.Views.Main
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.Filter = "CSV documents (*.csv)|*.csv|All files (*.*)|*.*";
             dialog.FilterIndex = 1;
-            if (!string.IsNullOrEmpty(Settings.DefaultCsvFilePath))
+            AppSettings settings = AppSettings.GetSettings();
+            if (!string.IsNullOrEmpty(settings.DefaultCsvFilePath))
             {
-                dialog.InitialDirectory = Settings.DefaultCsvFilePath;
+                dialog.InitialDirectory = settings.DefaultCsvFilePath;
             }
             if (dialog.ShowDialog() == true)
             {
-                Settings.DefaultCsvFilePath = dialog.FileName;
-                Devices = new ObservableCollection<Device>(Device.LoadFromCsvFile(Settings.DefaultCsvFilePath));
+                settings.DefaultCsvFilePath = dialog.FileName;
+                Devices = new ObservableCollection<Device>(Device.LoadFromCsvFile(settings.DefaultCsvFilePath));
+                AppSettings.SetSettings(settings);
                 OnPropertyChanged("Devices");
             }
         }
@@ -101,9 +97,10 @@ namespace ORTPR_ModBusTable.Views.Main
         {
             try
             {
-                List<DeviceType> typeInfos = DeviceTypeInfos.LoadFromJsonFile(Settings.DefaultTypeInfosFilePath);
+                AppSettings settings = AppSettings.GetSettings();
+                List<DeviceType> typeInfos = DeviceTypeInfos.LoadFromJsonFile(settings.DefaultTypeInfosFilePath);
                 Dictionary<string, int> typeOffset = new Dictionary<string, int>();
-                using (StreamReader file = File.OpenText(Settings.DefaultTypeOffsetFilePath))
+                using (StreamReader file = File.OpenText(settings.DefaultTypeOffsetFilePath))
                 {
                     JsonSerializer serializer = new JsonSerializer();
                     typeOffset = (Dictionary<string, int>)serializer.Deserialize(file, typeof(Dictionary<string, int>));
@@ -147,14 +144,15 @@ namespace ORTPR_ModBusTable.Views.Main
 
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Filter = "XML documents (*.xml)|*.xml|All files (*.*)|*.*";
-                if (!string.IsNullOrEmpty(Settings.DefaultTypeOffsetFilePath))
+                if (!string.IsNullOrEmpty(settings.DefaultTypeOffsetFilePath))
                 {
-                    saveFileDialog.InitialDirectory = Settings.DefaultOutFilePath;
+                    saveFileDialog.InitialDirectory = settings.DefaultOutFilePath;
                 }
                 if (saveFileDialog.ShowDialog() == true)
                 {
-                    Settings.DefaultOutFilePath = saveFileDialog.FileName;
-                    xmlFile.Save(Settings.DefaultOutFilePath);
+                    settings.DefaultOutFilePath = saveFileDialog.FileName;
+                    xmlFile.Save(settings.DefaultOutFilePath);
+                    AppSettings.SetSettings(settings);
                 }
                 
 
@@ -203,7 +201,6 @@ namespace ORTPR_ModBusTable.Views.Main
         void OpenSettingsWindow()
         {
             var settingsWin = new SettingsWindow();
-            settingsWin.Settings = this.Settings;
             settingsWin.ShowDialog();
         }
 
@@ -219,7 +216,7 @@ namespace ORTPR_ModBusTable.Views.Main
         {
             //запись текущих настроек в файл
             JsonFileProvider<AppSettings> settingsService = new JsonFileProvider<AppSettings>();
-            settingsService.Save(Settings, Properties.Settings.Default.AppSettingsFileName);
+            settingsService.Save(AppSettings.GetSettings(), Properties.Settings.Default.AppSettingsFileName);
         }
 
         bool CanCloseWindow()
