@@ -8,19 +8,16 @@ using System.Threading.Tasks;
 
 namespace ORTPR_ModBusTable.Models
 {
+    /// <summary>
+    /// Класс декларирован только для корректной десериализации заданного формата JSON-файла
+    /// </summary>
     class DeviceTypeInfos
     {
         public List<DeviceType> TypeInfos;
-
-        public static List<DeviceType> LoadFromJsonFile(string filePath)
-        {
-            using (StreamReader file = File.OpenText(filePath))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                return ((DeviceTypeInfos)serializer.Deserialize(file, typeof(DeviceTypeInfos))).TypeInfos;
-            }
-        }
     }
+    /// <summary>
+    /// Описание структуры устройства в карте ModBus
+    /// </summary>
     class DeviceType
     {
         public string TypeName;

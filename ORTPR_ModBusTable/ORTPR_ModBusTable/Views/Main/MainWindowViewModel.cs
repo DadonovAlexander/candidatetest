@@ -97,65 +97,22 @@ namespace ORTPR_ModBusTable.Views.Main
         {
             try
             {
-                AppSettings settings = AppSettings.GetSettings();
-                List<DeviceType> typeInfos = DeviceTypeInfos.LoadFromJsonFile(settings.DefaultTypeInfosFilePath);
-                Dictionary<string, int> typeOffset = new Dictionary<string, int>();
-                using (StreamReader file = File.OpenText(settings.DefaultTypeOffsetFilePath))
-                {
-                    JsonSerializer serializer = new JsonSerializer();
-                    typeOffset = (Dictionary<string, int>)serializer.Deserialize(file, typeof(Dictionary<string, int>));
-                }
-
-                List<Binding> bindings = new List<Binding>();
-                DeviceType typeInfo;
-                int addr = 0;
-                // конкатенация
-                foreach (Device device in Devices)
-                {
-                    if (device.IsIgnore)
-                        continue;
-                    typeInfo = typeInfos.Single(t => t.TypeName.Equals(device.Type));
-                    foreach (KeyValuePair<string, string> prop in typeInfo.Propertys)
-                    {
-                        addr = AddNewBinding(typeOffset, bindings, addr, device, prop);
-                    }
-
-                }
-
-                var xmlFile = new XmlDocument();
-                var root = xmlFile.CreateElement("root");
-                foreach (Binding binding in bindings)
-                {
-                    var bindingItem = xmlFile.CreateElement("item");
-                    var attribute = xmlFile.CreateAttribute("Binding");     // Создаем атрибут и нужным именем.
-                    attribute.InnerText = "Introduced";                     // Устанавливаем содержимое атрибута.
-                    bindingItem.Attributes.Append(attribute);               // Добавляем атрибут к элементу.
-                    var child_tag = xmlFile.CreateElement("node-path");
-                    child_tag.InnerText = binding.Tag;
-                    bindingItem.AppendChild(child_tag);
-                    var child_addr = xmlFile.CreateElement("address");
-                    child_addr.InnerText = binding.Address.ToString();
-                    bindingItem.AppendChild(child_addr);
-
-                    root.AppendChild(bindingItem);
-                }
-
-                xmlFile.AppendChild(root);
-
+                ModbusTable mb = new ModbusTable();
+                mb.LoadSource(Devices.ToList<Device>());
+                mb.Generate();
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Filter = "XML documents (*.xml)|*.xml|All files (*.*)|*.*";
-                if (!string.IsNullOrEmpty(settings.DefaultTypeOffsetFilePath))
+                AppSettings settings = AppSettings.GetSettings();
+                if (!string.IsNullOrEmpty(settings.DefaultOutFilePath))
                 {
                     saveFileDialog.InitialDirectory = settings.DefaultOutFilePath;
                 }
                 if (saveFileDialog.ShowDialog() == true)
                 {
                     settings.DefaultOutFilePath = saveFileDialog.FileName;
-                    xmlFile.Save(settings.DefaultOutFilePath);
+                    mb.Save(settings.DefaultOutFilePath);
                     AppSettings.SetSettings(settings);
                 }
-                
-
             }
             catch(Exception ex)
             {
@@ -166,30 +123,7 @@ namespace ORTPR_ModBusTable.Views.Main
             
         }
 
-        /// <summary>
-        /// Добавление новой записи в таблицу привязок
-        /// </summary>
-        /// <param name="typeOffset">Таблица смещения адреса новой записи в зависимости от типа тега</param>
-        /// <param name="bindings">Таблица привязок ModBusTable</param>
-        /// <param name="addr">ModBus адресс</param>
-        /// <param name="device">Устройство</param>
-        /// <param name="prop">Параметр устройства</param>
-        /// <returns></returns>
-        private static int AddNewBinding(Dictionary<string, int> typeOffset, List<Binding> bindings, int addr, Device device, KeyValuePair<string, string> prop)
-        {
-            bindings.Add(new Binding(device.Tag + "." + prop.Key, prop.Value, addr));
-            if (typeOffset.ContainsKey(prop.Value))
-            {
-                addr += typeOffset[prop.Value];
-            }
-            else
-            {
-                MessageBox.Show($"В файле определения смещения адресса от типа данных отсутствует заданный тип данных: {prop.Value}");
-            }
-
-            return addr;
-        }
-
+        
         bool CanGenModBusTable()
         {
             return true;

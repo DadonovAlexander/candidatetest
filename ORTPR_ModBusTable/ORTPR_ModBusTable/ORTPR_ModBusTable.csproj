@@ -101,6 +101,7 @@
     <Compile Include="Models\Binding.cs" />
     <Compile Include="Models\Device.cs" />
     <Compile Include="Models\AppSettings.cs" />
+    <Compile Include="Models\ModbusTable.cs" />
     <Compile Include="Models\TypeInfos.cs" />
     <Compile Include="Service\JsonFileProvider.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
