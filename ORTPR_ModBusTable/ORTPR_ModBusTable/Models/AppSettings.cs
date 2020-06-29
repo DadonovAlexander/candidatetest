@@ -18,9 +18,25 @@ namespace ORTPR_ModBusTable.Models
         /// </summary>
         const string DEFAULT_CSV_DELIMETER = ";";
         /// <summary>
-        /// 
+        /// Настройки приложения
         /// </summary>
-        private static AppSettings instance;
+        private static AppSettings _instance;
+
+        private static AppSettings instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new AppSettings();
+                return _instance;
+            }
+            set
+            {
+                if (_instance == null)
+                    _instance = new AppSettings();
+                _instance = value;
+            }
+        }
 
         private string _defaultCsvFilePath;
         private string _defaultTypeInfosFilePath;
@@ -112,21 +128,17 @@ namespace ORTPR_ModBusTable.Models
         /// <returns></returns>
         public static AppSettings GetSettings()
         {
-            if (instance == null)
-                instance = new AppSettings();
             return instance;
         }
 
         public static void SetSettings(AppSettings settings)
         {
-            if(instance == null)
-                instance = new AppSettings();
             instance.DefaultCsvDelimeter = settings.DefaultCsvDelimeter;
             instance.DefaultCsvFilePath = settings.DefaultCsvFilePath;
             instance.DefaultTypeInfosFilePath = settings.DefaultTypeInfosFilePath;
             instance.DefaultTypeOffsetFilePath = settings.DefaultTypeOffsetFilePath;
             instance.DefaultOutFilePath = settings.DefaultOutFilePath;
         }
-     
+
     }
 }
