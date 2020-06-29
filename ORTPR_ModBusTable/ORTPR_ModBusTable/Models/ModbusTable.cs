@@ -1,11 +1,7 @@
-﻿using Microsoft.Win32;
-using ORTPR_ModBusTable.Service;
+﻿using ORTPR_ModBusTable.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace ORTPR_ModBusTable.Models
 {
@@ -14,11 +10,22 @@ namespace ORTPR_ModBusTable.Models
     /// </summary>
     class ModbusTable
     {
+        /// <summary>
+        /// Список устройств
+        /// </summary>
         List<Device> Devices { get; set; }
+        /// <summary>
+        /// Описание структуры устройств
+        /// </summary>
         List<DeviceType> TypeInfos { get; set; }
+        /// <summary>
+        /// Словарь соответствия смещения по памяти от типа данных
+        /// </summary>
         Dictionary<string, int> TypeOffset { get; set; }
-
-        XmlDocument XmlFile = new XmlDocument();
+        /// <summary>
+        /// Список привязок устройств к ModBus-карте
+        /// </summary>
+        Bindings Bindings { get; set; }
 
         public ModbusTable() { }
 
@@ -34,7 +41,6 @@ namespace ORTPR_ModBusTable.Models
             TypeInfos = typeInfosService.Load(settings.DefaultTypeInfosFilePath).TypeInfos;
             JsonFileProvider<Dictionary<string, int>> typeOffsetService = new JsonFileProvider<Dictionary<string, int>>();
             TypeOffset = typeOffsetService.Load(settings.DefaultTypeOffsetFilePath);
-
         }
 
         /// <summary>
@@ -42,7 +48,7 @@ namespace ORTPR_ModBusTable.Models
         /// </summary>
         public void Generate()
         {
-            List<Binding> bindings = new List<Binding>();
+            Bindings = new Bindings(); 
             DeviceType typeInfo;
             int addr = 0;
             // конкатенация
@@ -53,29 +59,9 @@ namespace ORTPR_ModBusTable.Models
                 typeInfo = TypeInfos.Single(t => t.TypeName.Equals(device.Type));
                 foreach (KeyValuePair<string, string> prop in typeInfo.Propertys)
                 {
-                    addr = AddNewBinding(bindings, addr, device, prop);
+                    addr = AddNewBinding(Bindings, addr, device, prop);
                 }
-
             }
-
-            var root = XmlFile.CreateElement("root");
-            foreach (Binding binding in bindings)
-            {
-                var bindingItem = XmlFile.CreateElement("item");
-                var attribute = XmlFile.CreateAttribute("Binding");     // Создаем атрибут и нужным именем.
-                attribute.InnerText = "Introduced";                     // Устанавливаем содержимое атрибута.
-                bindingItem.Attributes.Append(attribute);               // Добавляем атрибут к элементу.
-                var child_tag = XmlFile.CreateElement("node-path");
-                child_tag.InnerText = binding.Tag;
-                bindingItem.AppendChild(child_tag);
-                var child_addr = XmlFile.CreateElement("address");
-                child_addr.InnerText = binding.Address.ToString();
-                bindingItem.AppendChild(child_addr);
-
-                root.AppendChild(bindingItem);
-            }
-
-            XmlFile.AppendChild(root);
         }
 
         /// <summary>
@@ -84,7 +70,8 @@ namespace ORTPR_ModBusTable.Models
         /// <param name="fileName"></param>
         public void Save(string fileName)
         {
-            XmlFile.Save(fileName);
+            XmlFileProvider<Bindings> XmlService = new XmlFileProvider<Bindings>();
+            XmlService.Save(Bindings, fileName);
         }
 
         /// <summary>
@@ -96,7 +83,7 @@ namespace ORTPR_ModBusTable.Models
         /// <param name="device">Устройство</param>
         /// <param name="prop">Параметр устройства</param>
         /// <returns></returns>
-        private int AddNewBinding(List<Binding> bindings, int addr, Device device, KeyValuePair<string, string> prop)
+        private int AddNewBinding(Bindings bindings, int addr, Device device, KeyValuePair<string, string> prop)
         {
             bindings.Add(new Binding(device.Tag + "." + prop.Key, prop.Value, addr));
             if (TypeOffset.ContainsKey(prop.Value))
